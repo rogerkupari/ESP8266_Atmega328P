@@ -18,6 +18,8 @@
 
 
 // communications to/from ESP and networking settings
+
+// these ***** attributes are hided, just place your attributes on those places
 char espReady[20] = "IF=Start 2016\r\n";
 char espWifiOk[20] = "IF=connected\r\n";
 char ssid[20] = "SI:*****\n\r";
