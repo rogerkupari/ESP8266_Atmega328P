@@ -28,7 +28,6 @@ char clientId[20] =  "CI:*****\n\r";
 char mqtt_server[20] = "SA:*****\n\r";
 char cfgReady[20] = "CO\n\r";
 
-char * cfg [7][20] = {espReady, ssid, password, clientId, mqtt_server, outTopic, inTopic};
 
                     
 
