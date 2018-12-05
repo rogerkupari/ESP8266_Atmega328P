@@ -20,13 +20,12 @@
 // communications to/from ESP and networking settings
 char espReady[20] = "IF=Start 2016\r\n";
 char espWifiOk[20] = "IF=connected\r\n";
-char ssid[20] = "SI:Nk5\n\r";
-char password[20] = "PW:testi111\n\r";
-char inTopic[20] = "IT:inTopic\n\r"; 
-char outTopic[20] = "OT:outTopic\n\r"; 
-char clientId[20] =  "CI:ESP8266_89\n\r";
-char mqtt_server[20] = "SA:18.195.243.110\n\r";
-char channel="11\n";
+char ssid[20] = "SI:*****\n\r";
+char password[20] = "PW:*****\n\r";
+char inTopic[20] = "IT:*****\n\r"; 
+char outTopic[20] = "OT:*****\n\r"; 
+char clientId[20] =  "CI:*****\n\r";
+char mqtt_server[20] = "SA:*****\n\r";
 char cfgReady[20] = "CO\n\r";
 
 char * cfg [7][20] = {espReady, ssid, password, clientId, mqtt_server, outTopic, inTopic};
@@ -38,7 +37,7 @@ char rx_buf[20][20];
 int column = 0;
 int row = 0;
 
-// Is wififi configured?
+// Is wifi configured?
 bool wifiCfg = false;
 // What is the current status of wifi config?
 int cfgStatus = 0;
