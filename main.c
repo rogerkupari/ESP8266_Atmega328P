@@ -6,7 +6,20 @@
  * 
  */
 
+/*
 
+------   INFO ------
+- Look the wiring schema file
++ Place (*****) your connection attributes above
+-> Push reset button to ESP (with normal boot -mode by switch)
+---> Open Atmega serial monitor
+----->and if you can see "Wifi connection ok" -> Look into your mqtt server
+
+*/
+
+
+
+// Clock and serial speed definitions
 #define F_CPU 16000000UL
 #define BAUD 9600
 
@@ -17,17 +30,19 @@
 #include <util/delay.h>
 
 
+// RX-attributes
 // communications to/from ESP and networking settings
-
-// these ***** attributes are hided, just place your attributes on those places
 char espReady[20] = "IF=Start 2016\r\n";
 char espWifiOk[20] = "IF=connected\r\n";
+
+// TX-attributes
+// Place ***** with your attributes
 char ssid[20] = "SI:*****\n\r";
 char password[20] = "PW:*****\n\r";
 char inTopic[20] = "IT:*****\n\r"; 
 char outTopic[20] = "OT:*****\n\r"; 
 char clientId[20] =  "CI:*****\n\r";
-char mqtt_server[20] = "SA:*****\n\r";
+char mqtt_server[20] = "SA:18.195.243.110\n\r"; // to hivemq.com server -> http://www.hivemq.com/demos/websocket-client/
 char cfgReady[20] = "CO\n\r";
 
 
@@ -74,14 +89,14 @@ void setup(){
 void loop()
 {
     
- 
+ // If esp configuration is on progress
   if(wifiCfg)
   {
     wifiSetup();
     
   }
-
-  if(cfgStatus == 10 && !wifiCfg && !tested && wfiOk)
+  // If the configuration process is done, and not tested yet and wifi connection has been confirmed
+  if(!wifiCfg && !tested && wfiOk)
   {
     sprintf(tx_buf, "ME:testi 5\n\r");
     usart_tx(tx_buf);
@@ -118,25 +133,31 @@ ISR(USART_RX_vect)
   rx_buf[row][column] = data;
   column++;
 
-  
+  // If ascii '\n'
   if(data == 0x0A)
   {
-
+    // If data = espReady after reset
     if(strcmp(rx_buf[row], espReady) == 0)
     {
       cfgStatus = 1;
       wifiCfg = true;
-      wfiOk =false;
+      wfiOk = false;
+      tested = false;
       row = 0;
       column = 0;
     }
+    // if data = wifi connection estabilished
     else if(strcmp(rx_buf[row], espWifiOk) == 0)
     {
-      _delay_ms(5000);
+      
+      
+      usart_tx("Wifi connection ok\n");
       wfiOk = true;
-      usart_tx(rx_buf[row]);
+      row++;
+      column = 0;
     }
    
+    // else just continue rows to rx-buffer array
     else
     {
       
@@ -157,14 +178,18 @@ void wifiSetup()
 
   switch (cfgStatus)
   {
+      // send SSID, grow cfgStatus
     case 1: sprintf(tx_buf, "%s", ssid); cfgStatus++; usart_tx(tx_buf); break;
+      // send password, grow cfgStatus
     case 2: sprintf(tx_buf, "%s", password);cfgStatus++; usart_tx(tx_buf); break;
-    
+      // and so on..
     case 3: sprintf(tx_buf, "%s", clientId); cfgStatus++; usart_tx(tx_buf); break;
     case 4: sprintf(tx_buf, "%s", mqtt_server); cfgStatus++; usart_tx(tx_buf); break;
     case 5: sprintf(tx_buf, "%s", outTopic); cfgStatus++; usart_tx(tx_buf); break;
     case 6: sprintf(tx_buf, "%s", inTopic); cfgStatus++; usart_tx(tx_buf); break;
     case 7: sprintf(tx_buf, "%s", cfgReady); cfgStatus++; usart_tx(tx_buf); break;
+      // If status = 8, then configuration = done
+      // just print to user serial monitor notification which tells that config ok and grow status value up to 10
     case 8: sprintf(tx_buf, "Config ok\n"); cfgStatus = 10; wifiCfg = false; usart_tx(tx_buf); break;
 
     
